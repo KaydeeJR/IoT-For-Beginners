@@ -51,9 +51,10 @@ Run the main script:
 python "./src/main.py"
 ```
 
-## Project Structure (example)
-- src/main.py        - main entrypoint
-- requirements.txt     - Python dependencies
+## Project Structure
+- `src/main.py` - main entrypoint
+- `requirements.txt` - Python dependencies
+- `etc/` - additional information relevant to the project
 
 ## Contributing
 - Open an issue or pull request with improvements.
