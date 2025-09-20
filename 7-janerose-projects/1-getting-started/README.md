@@ -9,6 +9,7 @@ Each project demonstrates basic setup, sample code, and steps to flash and run t
 - Source code can be found in the repo's src/ folder
 
 ## Prerequisites
+### Software
 - Basic familiarity with a microcontroller platform such as PlatformIO
 - A USB cable and a PC running Windows OS
 - Installed software/extensions/packages:
@@ -17,8 +18,8 @@ Each project demonstrates basic setup, sample code, and steps to flash and run t
   - pip
   - [counterfit](https://pypi.org/project/CounterFit/)
 
-## Hardware
-These projects make use of virtual IoT hardware components powered by CounterFit.
+### Hardware
+These projects make use of virtual IoT hardware components powered by CounterFit (python package).
 
 - (Optional) 1× microcontroller board: ATmega328 [Arduino Nano 3.x](https://docs.arduino.cc/hardware/nano/)
 
