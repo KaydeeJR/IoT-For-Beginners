@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "author": "kaydeJR",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-arduino-nano",
+      "id": "nano",
+      "top": 20,
+      "left": 20,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr1",
+      "top": -62.39,
+      "left": 70.26,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [
+      "nano:GND.1",
+      "ldr1:GND",
+      "black",
+      [
+        "v-18",
+        "h138",
+        "v-44"
+      ]
+    ],
+    [
+      "ldr1:VCC",
+      "nano:5V",
+      "red",
+      [
+        "h92",
+        "v276",
+        "h-145"
+      ]
+    ],
+    [
+      "ldr1:AO",
+      "nano:A0",
+      "orange",
+      [
+        "h69",
+        "v241",
+        "h-84"
+      ]
+    ]
+  ]
+}

@@ -1,0 +1,13 @@
+[wokwi]
+version = 1
+firmware = ".pio/build/nanoatmega328/firmware.hex"
+elf = ".pio/build/nanoatmega328/firmware.elf"
+board = "nano"
+
+[[wokwi.parts]]
+id = "ldr"
+pin = "A0"
+
+[[wokwi.parts]]
+id = "led"
+pin = 13
