@@ -28,7 +28,7 @@ void loop()
   // reads an analog value(from 0-1,023) from the WIO_LIGHT pin for the on-board light sensor
   // This analog value is then sent to the serial port so you can read it in the Serial Monitor when the code is running.
   int light = analogRead(WIO_LIGHT);
-  Serial.print("Light value, range 0-1023: ");
+  Serial.print("Light value: ");
   Serial.println(light);
 
   // a small delay of one second (1,000ms) at the end of the loop since the light levels don't need to be checked continuously
