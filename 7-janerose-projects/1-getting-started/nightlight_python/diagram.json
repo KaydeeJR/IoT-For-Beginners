@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "author": "kaydeJR",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-c3-devkitm-1",
+      "id": "esp32c3",
+      "top": 20,
+      "left": 20,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr1",
+      "top": -62.39,
+      "left": 70.26,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -20,
+      "left": 200,
+      "attrs": {
+        "color": "red"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 40,
+      "left": 200,
+      "attrs": {
+        "value": "220"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "esp32c3:GND",
+      "ldr1:GND",
+      "black",
+      [
+        "v-18",
+        "h138",
+        "v-44"
+      ]
+    ],
+    [
+      "ldr1:VCC",
+      "esp32c3:3V3",
+      "red",
+      [
+        "h92",
+        "v276",
+        "h-145"
+      ]
+    ],
+    [
+      "ldr1:AO",
+      "esp32c3:2",
+      "orange",
+      [
+        "h69",
+        "v241",
+        "h-84"
+      ]
+    ],
+    [
+      "esp32c3:13",
+      "led1:A",
+      "green",
+      [
+        "h100"
+      ]
+    ],
+    [
+      "led1:C",
+      "r1:1",
+      "black",
+      [
+        "v40"
+      ]
+    ],
+    [
+      "r1:2",
+      "esp32c3:GND",
+      "black",
+      [
+        "h-60",
+        "v20"
+      ]
+    ]
+  ]
+}

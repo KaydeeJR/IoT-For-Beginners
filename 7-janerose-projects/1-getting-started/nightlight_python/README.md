@@ -1,173 +1,141 @@
 # Nightlight (Python)
 
-A simple Python-based nightlight project for small IoT experiments. This repository contains code to connect to counterfit server and capture images via a PiCamera sensor.
-The nightlight needs one light sensor, created in the CounterFit app.
+A small, beginner-friendly Python project that demonstrates reading a light sensor and capturing images using a virtual PiCamera for IoT experimentation with CounterFit. This repository contains example code to connect to a CounterFit server, read a Grove light sensor, and capture images from a PiCamera sensor simulated by CounterFit.
 
-In a physical IoT device, it would be a photodiode that converts light to an electrical signal. Light sensors are analog sensors that send an integer value indicating a relative amount of light, that doesn't map to any standard unit of measurement such as lux.
+Quick links
+- Project folder: nightlight_python
+- Example scripts: src/camera.py, src/app.py (light sensor)
+- Screenshots: etc/
 
-To use a virtual light sensor, you need to add it to the CounterFit app
+Overview
+- Read simulated light sensor values (Grove Light Sensor shim).
+- Capture and save images using the PiCamera shim or a webcam source provided by CounterFit.
+- Intended for use with the CounterFit virtual device server (local web UI).
 
-## Features
-- Captures an image and saves the image to file.
-- 
+Prerequisites
+- Python 3.13+ (or compatible 3.x)
+- CounterFit server installed and running locally
+- Optional: virtual environment for Python dependencies
 
-## Prerequisites
-- Python 3.13+
+Recommended dependencies
+- counterfit
+- counterfit-shims-grove
+- counterfit-shims-picamera
+- counterfit-shims-serial
+- werkzeug==2.2.3 (compatibility note)
 
-## Installation
-
-1. Create and activate a virtual environment (recommended):
-   - Windows:
+Quick start (local)
+1. Create and activate a virtual environment (recommended)
+   - Windows PowerShell:
      ```
      python -m venv .venv
-     source "./.venv/Scripts/activate"
+     .venv\Scripts\Activate.ps1
+     ```
+   - Windows cmd:
+     ```
+     python -m venv .venv
+     .venv\Scripts\activate
+     ```
+2. Install dependencies:
+   - If a requirements.txt file exists:
+     ```
+     pip install -r requirements.txt
+     ```
+   - Otherwise:
+     ```
+     pip install counterfit counterfit-shims-grove counterfit-shims-picamera counterfit-shims-serial werkzeug==2.2.3
+     ```
+3. Start CounterFit server:
+   ```
+   Counterfit
+   ```
+   Open [http://localhost:5000](http://localhost:5000) in a browser.
+4. Create sensors in the CounterFit UI (see sections below).
+5. Run scripts:
+   - Camera capture:
+     ```
+     python "./src/camera.py"
+     ```
+   - Light sensor loop:
+     ```
+     python "./src/app.py"
      ```
 
-2. Install dependencies (if a requirements.txt exists):
-   ```
-   pip install -r requirements.txt
-   ```
-   If no requirements file is present, install hardware libraries as needed:
-   ```
-   pip install counterfit counterfit-shims-grove counterfit-shims-serial counterfit-shims-picamera werkzeug==2.2.3
-   ```
+Create and configure sensors in CounterFit
+- Camera (PiCamera)
+  1. In the CounterFit web UI → Sensors → Create sensor.
+  2. Select Sensor type: Camera.
+  3. Name: Picamera (or any name you prefer).
+  4. Source: WebCam (or other available source).
+  5. Click Add → Set.
+  The camera sensor will appear in the sensor list and be available to scripts.
 
-## Run
-Start the Counterfit server:
+- Light (Grove Light Sensor)
+  1. In the CounterFit web UI → Sensors → Create sensor.
+  2. Select Sensor type: Light.
+  3. Units: NoUnits (default).
+  4. Pin: 0
+  5. Click Add → Set.
+  You can set a fixed Value or check Random and enter Min/Max to simulate changing light.
 
-```
-Counterfit
-```
+Example code snippets
 
-Open [localhost:5000/](http://localhost:5000/) in a browser.
+- Minimal light sensor loop (src/app.py)
+```python
+# filepath: src/app.py
+import time
+from counterfit_shims_grove.grove_light_sensor_v1_2 import GroveLightSensor
 
-Create a Camera Sensor:
-1. In the *Create sensor* box in the *Sensors* pane, drop down the *Sensor type* box and select *Camera*.
-2. Give the sensor this name *Picamera*
-3. Select the **Add** button to create the camera sensor
-4. In the *Source* box, select *WebCam*
-5. Click Set
+light_sensor = GroveLightSensor(0)
 
-![The camera sensor settings](./etc/PiCamera_settings.png)
-
-The camera sensor will be created and appear in the sensors list.
-![The camera sensor created](./etc/PiCamera_setup.png)
-
-The device can now be programmed to capture images.
-
-Run the Camera script to capture images:
-
-```
-python "./src/camera.py"
-```
-
-Create a Light sensor:
-1. In the *Create sensor* box in the *Sensors* pane, drop down the *Sensor type* box and select *Light*.
-2. Leave the *Units* set to *NoUnits*
-3. Ensure the *Pin* is set to *0*
-4. Select the **Add** button to create the light sensor on Pin 0
-
-![The light sensor settings](../../../images/counterfit-create-light-sensor.png)
-The light sensor will be created and appear in the sensors list.
-![The light sensor created](../../../images/counterfit-light-sensor.png)
-
-The device can now be programmed to use the built in light sensor form CounterFit.
-
-Run the Light script to capture images:
-
-```
-python "./src/light.py"
-```
-
-Light values will be output to the console. Initially this value will be 0. To simulate sensor data from the CounterFit app, change the value of the light sensor that will be read by the app. 
-
-You can do this in one of 2 ways:
-
-- Enter a number in the Value box for the light sensor, then select the **Set** button. The number you enter will be the value returned by the sensor.
-
-- Check the Random checkbox, and enter a Min and Max value, then select the **Set** button. Every time the sensor reads a value, it will read a random number between Min and Max.
-
-The values you set will be output to the console. Change the **Value** or the **Random** settings to make the value change.
-
-## Project Structure
-- `src/main.py` - main entrypoint
-- `requirements.txt` - Python dependencies
-- `etc/` - additional information relevant to the project
-
-## Contributing
-- Open an issue or pull request with improvements.
-
-## License
-Add a LICENSE file or include license details here.
-
-
-### Task - program the light sensor
-
-Program the device.
-
-1. Open the nightlight project in VS Code that you created in the previous part of this assignment. Kill and re-create the terminal to ensure it is running using the virtual environment if necessary.
-
-1. Open the `app.py` file
-
-1. Add the following code to the top of `app.py` file with the rest of the `import` statements to connect to import some required libraries:
-
-    ```python
-    import time
-    from counterfit_shims_grove.grove_light_sensor_v1_2 import GroveLightSensor
-    ```
-
-    The `import time` statement imports the Python `time` module that will be used later in this assignment.
-
-    The `from counterfit_shims_grove.grove_light_sensor_v1_2 import GroveLightSensor` statement imports the `GroveLightSensor` from the CounterFit Grove shim Python libraries. This library has code to interact with a light sensor created in the CounterFit app.
-
-1. Add the following code to the bottom of the file to create instances of classes that manage the light sensor:
-
-    ```python
-    light_sensor = GroveLightSensor(0)
-    ```
-
-    The line `light_sensor = GroveLightSensor(0)` creates an instance of the `GroveLightSensor` class connecting to pin **0** - the CounterFit Grove pin that the light sensor is connected to.
-
-1. Add an infinite loop after the code above to poll the light sensor value and print it to the console:
-
-    ```python
-    while True:
-        light = light_sensor.light
-        print('Light level:', light)
-    ```
-
-    This will read the current light level using the `light` property of the `GroveLightSensor` class. This property reads the analog value from the pin. This value is then printed to the console.
-
-1. Add a small sleep of one second at the end of the `while` loop as the light levels don't need to be checked continuously. A sleep reduces the power consumption of the device.
-
-    ```python
+while True:
+    light = light_sensor.light
+    print('Light level:', light)
     time.sleep(1)
-    ```
+```
 
-1. From the VS Code Terminal, run the following to run your Python app:
+- Minimal camera capture (src/camera.py)
+```python
+# filepath: src/camera.py
+from counterfit_shims_picamera.picamera import PiCamera
+from datetime import datetime
 
-    ```sh
-    python3 app.py
-    ```
+camera = PiCamera()
+filename = f"capture_{datetime.now():%Y%m%d_%H%M%S}.jpg"
+camera.capture(filename)
+print("Saved image to", filename)
+```
 
-    Light values will be output to the console. Initially this value will be 0.
+File layout (important files)
+- src/
+  - app.py        — example light sensor loop (reads GroveLightSensor on pin 0)
+  - camera.py     — example camera capture script
+- etc/            — screenshots and supporting images
+- requirements.txt — optional dependency list
 
-1. From the CounterFit app, change the value of the light sensor that will be read by the app. You can do this in one of two ways:
+Running and verifying
+- Start CounterFit and create the sensors described above.
+- Run src/camera.py to capture an image — check the project folder for saved images.
+- Run src/app.py to start printing simulated light values to the console.
+- In the CounterFit UI you can change the light sensor Value or enable Random to see changing outputs.
 
-    * Enter a number in the *Value* box for the light sensor, then select the **Set** button. The number you enter will be the value returned by the sensor.
+Troubleshooting
+- If values stay at 0: ensure the light sensor is created and assigned to pin 0 in CounterFit.
+- If camera capture fails: confirm Picamera sensor exists and Source is set to WebCam (or an available source).
+- If you see werkzeug/Flask compatibility errors: try werkzeug==2.2.3 as noted above.
+- Virtual environment: make sure the terminal session has the venv activated when running scripts.
 
-    * Check the *Random* checkbox, and enter a *Min* and *Max* value, then select the **Set** button. Every time the sensor reads a value, it will read a random number between *Min* and *Max*.
+Testing tips
+- Use the Random option in CounterFit for the light sensor to simulate dynamic behavior.
+- Capture multiple images with different camera settings (if available in your PiCamera shim).
 
-    The values you set will be output to the console. Change the *Value* or the *Random* settings to make the value change.
+Contributing
+- Improvements and bug fixes welcome via pull requests or issues.
+- Keep changes focused and provide a short description of why the change helps beginners.
 
-    ```output
-    (.venv) ➜  GroveTest python3 app.py 
-    Light level: 143
-    Light level: 244
-    Light level: 246
-    Light level: 253
-    ```
+License
+- Add a LICENSE file in the project root or include license metadata here.
 
-> 💁 You can find this code in the [code-sensor/virtual-device](code-sensor/virtual-device) folder.
-
-😀 Your nightlight program was a success!
+Contacts and references
+- CounterFit project: https://github.com/counterfitio (refer to official docs for server usage)
+- This project is designed for learning and simulation; do not use it in production environments without appropriate security and hardware validation.

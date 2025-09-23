@@ -1,0 +1,13 @@
+[wokwi]
+version = 1
+firmware = ".pio/build/esp32-c3-devkitc-02/firmware.bin"
+elf = ".pio/build/esp32-c3-devkitc-02/firmware.elf"
+board = "wokwi-esp32-c3-devkitm-1"
+
+[[wokwi.parts]]
+id = "ldr"
+pin = "2"
+
+[[wokwi.parts]]
+id = "led"
+pin = 13
