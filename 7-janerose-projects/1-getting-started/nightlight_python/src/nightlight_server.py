@@ -1,10 +1,13 @@
-# Code for the server that processes telemetry from the nightlight device
+# Code for the server that receives and processes telemetry from the device, makes 
 # and sends commands back to it based on light levels.
+import logging
 import json
 import time
 
 #  this library automatically checks if there is a network connection
 from paho.mqtt import client as mqtt_client
+
+logging.basicConfig(level=logging.INFO)
 
 CLIENT_ID = "2fe8f0bf6f440b14087f4b66ae305e13bd5b1b5d39480a8995be1834abf3ff46"
 
@@ -24,22 +27,21 @@ mqtt_client.loop_start()
 
 def receive_telemetry(client, userdata, message):
     payload = json.loads(message.payload.decode())
-    print("Received telemetry on topic:", message.topic)
+    logging.info("Received telemetry on topic: %s", message.topic)
     process_telemetry(payload)
 
 
 def process_telemetry(payload):
-    print("Processing telemetry...")
-    INVERT = False
+    logging.info("Processing telemetry...")
+    INVERT_LOGIC = False  # Lower lux values = darker = LED on
     light_val = int(payload.get('lightIn', 0))
-    print("lightIn =", light_val, "threshold =", LIGHT_THRESHOLD, "invert =", INVERT)
-    if INVERT:
-        led_on = light_val > LIGHT_THRESHOLD
-    else:
-        led_on = light_val < LIGHT_THRESHOLD
+    logging.info("lightIn = %d, threshold = %d, invert = %s", light_val, LIGHT_THRESHOLD, INVERT_LOGIC)
+
+    led_on = light_val < LIGHT_THRESHOLD  # Lower light = LED on
+    
     command = {'LedOn': led_on}
     mqtt_client.publish(SERVER_COMMAND_TOPIC, json.dumps(command))
-    print("Sent command:", command)
+    logging.info("Sent command: %s", command)
 
 
 mqtt_client.on_message = receive_telemetry

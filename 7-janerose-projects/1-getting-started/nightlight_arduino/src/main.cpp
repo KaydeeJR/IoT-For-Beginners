@@ -1,14 +1,9 @@
 #include <Arduino.h>
 
-// put function declarations here:
-// int myFunction(int, int);
-
 const int WIO_LIGHT = A0; // the number of the GPIO pin connected to the on-board light sensor.
 
 void setup()
 {
-  // put your setup code here, to run once:
-  // int result = myFunction(2, 3);
   Serial.begin(9600);
   while (!Serial)
     ;
@@ -21,9 +16,8 @@ void setup()
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
-  // Serial.println("Hello, World!");
-  // delay(5000);
+  Serial.println("Hello, Janerose!");
+  delay(2000);
 
   // reads an analog value(from 0-1,023) from the WIO_LIGHT pin for the on-board light sensor
   // This analog value is then sent to the serial port so you can read it in the Serial Monitor when the code is running.
@@ -35,8 +29,3 @@ void loop()
   // This delay reduces the power consumption of the device
   delay(1000);
 }
-
-// put function definitions here:
-// int myFunction(int x, int y) {
-//   return x + y;
-// }

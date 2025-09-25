@@ -1,3 +1,5 @@
+// Runs on an ESP32-C3-DevKitC-02 board, reads a light sensor value, sends telemetry to an MQTT broker,
+// and receives commands to control an external LED based on the telemetry data.
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <PubSubClient.h>
@@ -84,6 +86,8 @@ void connectMqttClient()
     {
       Serial.println("connected");
       mqttClient.subscribe(SERVER_COMMAND_TOPIC.c_str());
+      Serial.print("Subscribed to: ");
+      Serial.println(SERVER_COMMAND_TOPIC);
     }
     else
     {
@@ -117,6 +121,9 @@ void clientCallback(char *topic, uint8_t *payload, unsigned int length)
 
   JsonObject obj = doc.as<JsonObject>();
   bool LedOn = obj["LedOn"];
+
+  Serial.print("Command received - LedOn: ");
+  Serial.println(LedOn ? "TRUE" : "FALSE");
 
   if (LedOn)
   {
