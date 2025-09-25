@@ -1,37 +1,25 @@
 # Getting Started — Janerose IoT Projects
 
-## Overview
-This folder contains beginner-friendly, hands-on IoT projects to help you get started with microcontrollers (Arduino) and simple **virtual** sensors/actuators.
+Pick a path below and follow the README in that folder for full step‑by‑step instructions.
 
-Each project demonstrates basic setup, sample code, and steps to flash and run the code.
+Paths:
+The Arduino path uses PlatformIO for building and uploading code, and Wokwi for simulation.
+- Arduino — microcontroller path (PlatformIO + Wokwi)
+  - Folder: [nightlight_arduino/](./nightlight_arduino/)  
+  - Focus: build firmware, read light values from an LDR sensor, run in Wokwi or on a physical Arduino.
 
-## Contents
-- Source code can be found in the repo's src/ folder
+The Python path uses CounterFit/Wokwi for virtual devices and MQTT for messaging.
+- Python — virtual devices path (CounterFit/Wokwi + MQTT)  
+  - Folder: [nightlight_python/](./nightlight_python/)
+  - Focus: simulated sensors/actuators, PiCamera capture, publish/subscribe telemetry via MQTT.
 
-## Prerequisites
-### Software
-- Basic familiarity with a microcontroller platform such as PlatformIO
-- A USB cable and a PC running Windows OS
-- Installed software/extensions/packages:
-  - PlatformIO as a VS Code extension 
-  - Python 3.13
-  - pip
-  - [counterfit](https://pypi.org/project/CounterFit/)
+How to use:
+1. Choose a path above.
+2. Open the matching folder and follow that folder's README for prerequisites, exact commands, wiring, and troubleshooting.
 
-### Hardware
-These projects make use of virtual IoT hardware components powered by CounterFit (python package).
+Structure:
+- nightlight_arduino/ — Arduino sketch, wokwi config, diagram, PlatformIO project
+- nightlight_python/ — Python scripts, Python packages, requirements.txt, wokwi config, diagram, PlatformIO project
 
-- (Optional) 1× microcontroller board: ATmega328 [Arduino Nano 3.x](https://docs.arduino.cc/hardware/nano/)
-
-## Where to look in this repo
-- /src — source code and scripts
-- /etc — Pinout diagrams, images (if present)
-- README files provide detailed information about each subproject
-
-## Resources
-- Arduino getting started: https://docs.arduino.cc/
-- ESP documentation: https://www.espressif.com/en/support/documents/technical-documents
-- PlatformIO: https://platformio.org/
-
-## License
-Check the LICENSE file in the repository root for licensing details.
+Notes
+- Each subfolder README contains full detail; this index is intentionally minimal.
