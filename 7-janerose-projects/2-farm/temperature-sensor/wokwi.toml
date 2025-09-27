@@ -1,0 +1,10 @@
+[wokwi]
+version = 1
+firmware = ".pio/build/rymcu-esp32-devkitc/firmware.bin"
+elf = ".pio/build/rymcu-esp32-devkitc/firmware.elf"
+board = "wokwi-esp32-devkit-v1"
+
+[[wokwi.parts]]
+id = "dht1"
+type = "wokwi-dht22"
+pin = 15
