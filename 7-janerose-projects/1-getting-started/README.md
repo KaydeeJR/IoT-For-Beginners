@@ -11,6 +11,9 @@ The Arduino path uses PlatformIO for building and uploading code, and Wokwi for 
 The Python path uses CounterFit/Wokwi for virtual devices and MQTT for messaging.
 - Python — virtual devices path (CounterFit/Wokwi + MQTT)  
   - Folder: [nightlight_python/](./nightlight_python/)
+    - The Python path has 2 separate telemetry projects:
+      - `nightlight.py`: simulates telemetry and commands using CounterFit (python library).
+      - `nightlight_server.py`: simulates telemetry and commands using wokwi, Python and PlatformIO.
   - Focus: simulated sensors/actuators, PiCamera capture, publish/subscribe telemetry via MQTT.
 
 How to use:

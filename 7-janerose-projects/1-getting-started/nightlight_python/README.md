@@ -1,10 +1,5 @@
-# Path: Python — Nightlight (CounterFit + MQTT)
-
-A high-level overview: this folder implements the Python path. Use this path if you want to run virtual devices with CounterFit, capture simulated PiCamera images, and send/receive telemetry via MQTT.
-
 # Nightlight (Python - with CounterFit and MQTT)
-
-This Python project demonstrates reading light signals from a virtual light sensor and capturing images using a virtual PiCamera using CounterFit.
+This project contains code to run virtual devices with CounterFit.
 
 This repository contains example code to connect to a CounterFit server, read a Grove light sensor, and capture images from a PiCamera sensor simulated by CounterFit.
 
@@ -41,7 +36,7 @@ This project also covers sending telemetry data to an MQTT broker and receiving 
      ```
     - bash:
       ```bash
-      python -m venv .venv
+      pip
       source .venv\Scripts\activate
       ```
 2. Install dependencies:
