@@ -11,8 +11,10 @@
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 
+#define MOISTURE_PIN 34
 #define DHTPIN 15
 #define DHTTYPE DHT22
+#define RELAY_PIN 2 // GPIO pin connected to the relay's IN pin
 
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -75,6 +77,9 @@ void setup()
 
   connectToWiFi();
   createMqttClient();
+
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW);
 }
 
 void connectToMqttClient()
@@ -148,17 +153,22 @@ void loop()
     Serial.println("Failed to read from DHT sensor!");
     return;
   }
+  int sensorValue = analogRead(MOISTURE_PIN);
+  float moisturePercent = map(sensorValue, 0, 4095, 0, 100);
 
   Serial.print("Temp: ");
   Serial.print(temp_hum_val[1]);
   Serial.print(" °C  |  Humidity: ");
   Serial.print(temp_hum_val[0]);
-  Serial.println(" %");
+  Serial.print(" % | Soil Moisture: ");
+  Serial.print(moisturePercent);
+  Serial.println("%");
 
   // Create and send telemetry
   DynamicJsonDocument doc(1024);
   doc["temperature"] = temp_hum_val[1];
   doc["humidity"] = temp_hum_val[0];
+  doc["moisture"] = moisturePercent;
 
   String telemetry;
   serializeJson(doc, telemetry);
@@ -167,6 +177,16 @@ void loop()
   Serial.println(telemetry);
 
   mqttClient.publish(CLIENT_TELEMETRY_TOPIC.c_str(), telemetry.c_str());
-  // temperature value doesn't need to be read very often - it won't change much in a short space of time
+  // sensor value doesn't need to be read very often - it won't change much in a short space of time
+   if (moisturePercent < 65)
+  {
+    Serial.println("Soil Moisture is too low, turning relay on.");
+    digitalWrite(RELAY_PIN, HIGH);
+  }
+  else
+  {
+    Serial.println("Soil Moisture is ok, turning relay off.");
+    digitalWrite(RELAY_PIN, LOW);
+  }
   delay(5000);
 }

@@ -1,4 +1,5 @@
-# Code uses virtual CounterFit hardware to simulate a temperature and humidity device
+# Code uses virtual CounterFit hardware to simulate a temperature, humidity,
+# soil moisture and relay devices
 from os import path
 
 import csv
@@ -8,9 +9,11 @@ import json
 import time
 
 from counterfit_shims_seeed_python_dht import DHT
+from counterfit_shims_grove.adc import ADC
+from counterfit_shims_grove.grove_relay import GroveRelay
 
 from counterfit_connection import CounterFitConnection
-#  this library automatically checks if there is a network connection
+# this library automatically checks if there is a network connection
 from paho.mqtt import client as mqtt_client
 
 logging.basicConfig(level=logging.INFO)
@@ -39,40 +42,59 @@ if not path.exists(temperature_file_name):
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
 
+
 def handle_command(payload):
-    # device-side: handle incoming command messages (LedOn) from the server
-    led_val = bool(payload.get("LedOn", False))
-    logging.info("Applying command LedOn = %s", led_val)
+    # device-side: handle incoming command messages (RelayOn) from the server
+    relay_val = bool(payload.get("RelayOn", False))
+    logging.info("Applying command RelayOn = %s", relay_val)
     try:
-        if led_val:
-            led.on()
+        if relay_val:
+            relay.on()
         else:
-            led.off()
+            relay.off()
     except Exception as e:
-        logging.error("Failed to set led state: %s", e)
+        logging.error("Failed to set relay state: %s", e)
 
 
 def process_telemetry(payload):
     """
-    Simple controller logic:
-    - Expect payload like {"temperature": <int>, "timestamp": ...}
-    - Decide LedOn based on LIGHT_THRESHOLD and publish to SERVER_COMMAND_TOPIC.
+    Process telemetry data locally and control relay based on moisture levels
     """
     try:
         temperature = int(payload.get("temperature", -1))
         humidity = int(payload.get("humidity", -1))
+        soil_moisture = int(payload.get("moisture", -1))
+        if soil_moisture < 45:
+            print(
+                f"Soil Moisture is {soil_moisture}% - too low, turning relay ON.")
+            relay.on()
+            relay_state = True
+        else:
+            print(
+                f"Soil Moisture is {soil_moisture}% - sufficient, turning relay OFF.")
+            relay.off()
+            relay_state = False
+        command = {"relay_on": relay_state}
+        command_payload = json.dumps(command)
+        logging.info("Publishing local command: %s", command_payload)
+        mqtt_client.publish(SERVER_COMMAND_TOPIC, command_payload)
+        # store temperature values to CSV file
         with open(temperature_file_name, mode='a') as temperature_file:
-            temperature_writer = csv.DictWriter(temperature_file, fieldnames=fieldnames)
+            temperature_writer = csv.DictWriter(
+                temperature_file, fieldnames=fieldnames)
             # The data is stored in ISO 8601 format with the timezone, but without microseconds.
-            temperature_writer.writerow({'datetime': datetime.now().astimezone().replace(microsecond=0).isoformat(), 'temperature': payload['temperature']})
+            temperature_writer.writerow({'datetime': datetime.now().astimezone().replace(
+                microsecond=0).isoformat(), 'temperature': payload['temperature']})
     except Exception as e:
         logging.error("Invalid telemetry payload: %s", e)
         return
-    logging.info(
-        "Processing telemetry temperature = %d °C | humidity = %d %%", temperature, humidity)
+    logging.info("Processing telemetry temperature = %d °C | humidity = %d %%", temperature, humidity)
 
 
 def on_message_handler(client, userdata, message):
+    """
+    Handle incoming MQTT messages (for external commands only)
+    """
     try:
         payload = json.loads(message.payload.decode())
     except Exception as e:
@@ -80,8 +102,8 @@ def on_message_handler(client, userdata, message):
         return
 
     logging.info("Received on %s: %s", message.topic, payload)
-    if message.topic == CLIENT_TELEMETRY_TOPIC:
-        process_telemetry(payload)
+    if message.topic == SERVER_COMMAND_TOPIC:
+        handle_command(payload)
     else:
         logging.warning("Unhandled topic: %s", message.topic)
 
@@ -95,24 +117,33 @@ mqtt_client.subscribe(SERVER_COMMAND_TOPIC)
 try:
     CounterFitConnection.init("127.0.0.1", 5000)
     logging.info("Connected to CounterFit server")
-    # virtual Digital Humidity and Temperature sensor. dht type is a virtual DHT11 sensor
+    # dht type is a virtual Digital Humidity and Temperature (DHT11) sensor
     dht_sensor = DHT(dht_type="11", pin=5)
+    adc_sensor = ADC()
+    relay = GroveRelay(pin=15)
 
     while True:
         # poll the temperature sensor value
         try:
             humidity, temp = dht_sensor.read()
-            logging.info('Temperature: %d', int(temp))
-            logging.info('Humidity: %d', int(humidity))
+            soil_moisture = adc_sensor.read(0)
+
+            logging.info('Temperature: %d  °C | Humidity: %d %% | Soil Moisture: %d %%', int(
+            temp), int(humidity), int(soil_moisture))
+
             telemetry = {
                 "temperature": int(temp),
                 "humidity": int(humidity),
+                "moisture": int(soil_moisture),
                 "timestamp": int(time.time() * 1000)
             }
+            process_telemetry(telemetry)
             payload = json.dumps(telemetry)
             logging.info("Publishing telemetry: %s", payload)
             mqtt_client.publish(CLIENT_TELEMETRY_TOPIC, payload)
-            # no need to check the temperature levels continuously, wait for a second before polling again
+
+            # no need to check the sensor values continuously
+            # wait for a second before polling again
             # this reduces the power consumption of the device
             time.sleep(10)
         except Exception as e:

@@ -1,4 +1,9 @@
 # Getting Started — Janerose IoT Projects
+This nightlight is an LED that turns on as soon as a low level of light is detected by a light sensor.
+
+The light sensor detects a change in light levels instantly, and the LED device is able to respond quickly, only limited by the length of the delay in the loop function or while True: loop.
+
+> As an IoT developer, you can't always rely on such a fast feedback loop.
 
 Pick a path below and follow the README in that folder for full step‑by‑step instructions.
 
